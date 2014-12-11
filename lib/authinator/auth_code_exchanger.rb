@@ -1,17 +1,14 @@
 
 class AuthCodeExchanger
-
-  def self.exhchange(provider, auth_code)
+  def self.exhchange(_provider, _auth_code)
     # auth_code = params[:code]
-
   end
-
 
   private
-  def exchange_with_googles(code)
+
+  def exchange_with_googles(_code)
   end
 
-  def exchange_with_stub(code)
-
+  def exchange_with_stub(_code)
   end
 end

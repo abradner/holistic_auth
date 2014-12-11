@@ -3,6 +3,6 @@ Bundler.setup
 
 require 'authinator' # and any other gems you need
 
-RSpec.configure do |config|
+RSpec.configure do |_config|
   # some (optional) config here
 end

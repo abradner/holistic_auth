@@ -4,3 +4,4 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'doorkeeper', github: 'doorkeeper-gem/doorkeeper'
+gem 'omniauth-oauth2', github: 'abradner/omniauth-oauth2'

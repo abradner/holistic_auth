@@ -1,3 +1,5 @@
+require 'omniauth/strategies/google_oauth2'
+
 # module Authinator
 class AuthCodeExchanger
   def self.exchange(provider, auth_code)
@@ -15,6 +17,7 @@ class AuthCodeExchanger
   private
 
   def self.exchange_with_google(_code)
+
     {
         access_token: 'abc',
         refresh_token: 'def',

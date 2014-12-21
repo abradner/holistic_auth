@@ -70,4 +70,10 @@ describe AuthCodeExchanger do
     expect(result.refresh_token).to eq @token_hash[:refresh_token]
     expect(result.expires_in).to eq @token_hash[:expires_in]
   end
+
+  it 'should gracefully not allow unsupported providers' do
+    expect{
+      AuthCodeExchanger.new(:some_fake_provider)
+    }.to raise_error(ArgumentError)
+  end
 end

@@ -18,7 +18,6 @@ describe AuthCodeExchanger do
 
     @req_headers = {
       accept: '*/*',
-      accept_encoding: 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
       content_type: 'application/x-www-form-urlencoded',
       user_agent: 'Faraday v0.9.0',
     }

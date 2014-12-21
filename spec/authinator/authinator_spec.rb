@@ -76,3 +76,14 @@ describe AuthCodeExchanger do
     end.to raise_error(ArgumentError)
   end
 end
+
+describe 'ClientTokenIssuer' do
+  pending
+  it 'should accept valid-looking credentials from the client'
+  it 'should exchange client-provided credentials for auth codes'
+  it 'should return an error to the client if the credentials were invalid'
+  it 'should verify that the tokens belong to the provided email before returning them'
+  it 'should generate our own set of tokens for the client if the provided ones exchanged successfully'
+
+  it 'should all integrate to follow a standard flow to auth the api client'
+end

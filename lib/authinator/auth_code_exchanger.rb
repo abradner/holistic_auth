@@ -6,9 +6,9 @@ require 'oauth2'
 class AuthCodeExchanger
   VALID_PROVIDERS = %i(stub google)
   STUB_SAMPLE_TOKEN = {
-    :token => 'ya29.token',
-    :refresh_token => '1/refresh',
-    :expires_in => 3600,
+    token: 'ya29.token',
+    refresh_token: '1/refresh',
+    expires_in: 3600,
   }
 
   attr_reader :provider
@@ -18,17 +18,17 @@ class AuthCodeExchanger
   end
 
   PROVIDER_HASHES = {
-    :google => {
-      :client_id => 'cl_id',
-      :client_secret => 'cl_sec',
-      :site => 'https://accounts.google.com',
-      :token_url => '/o/oauth2/token',
+    google: {
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://accounts.google.com',
+      token_url: '/o/oauth2/token',
     },
-    :stub => {
-      :client_id => 'cl_id',
-      :client_secret => 'cl_sec',
-      :site => 'https://example.org',
-      :token_url => '/extoken',
+    stub: {
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
     },
   }
 
@@ -52,10 +52,10 @@ class AuthCodeExchanger
     return if auth_code.nil? || auth_code.empty?
 
     case @provider.to_sym
-      when :google
-        exchange_with_google(auth_code)
-      when :stub
-        exchange_with_stub(auth_code)
+    when :google
+      exchange_with_google(auth_code)
+    when :stub
+      exchange_with_stub(auth_code)
     end
   end
 
@@ -92,8 +92,8 @@ private
     OAuth2::AccessToken.new(
         @client,
         STUB_SAMPLE_TOKEN[:token],
-        :refresh_token => STUB_SAMPLE_TOKEN[:refresh_token],
-        :expires_in => STUB_SAMPLE_TOKEN[:expires_in],
+        refresh_token: STUB_SAMPLE_TOKEN[:refresh_token],
+        expires_in: STUB_SAMPLE_TOKEN[:expires_in],
     )
   end
 end

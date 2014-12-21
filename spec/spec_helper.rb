@@ -7,7 +7,7 @@ if RUBY_VERSION >= '1.9'
 
   SimpleCov.formatters = [
     SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
+    Coveralls::SimpleCov::Formatter,
   ]
 
   SimpleCov.start do

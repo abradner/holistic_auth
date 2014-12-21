@@ -4,7 +4,7 @@ require 'oauth2'
 
 # module Authinator
 class AuthCodeExchanger
-  VALID_PROVIDERS = %i(stub google)
+  VALID_PROVIDERS = [:stub, :google]
   STUB_SAMPLE_TOKEN = {
     token: 'ya29.token',
     refresh_token: '1/refresh',

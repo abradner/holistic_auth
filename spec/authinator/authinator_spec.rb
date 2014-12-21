@@ -72,8 +72,8 @@ describe AuthCodeExchanger do
   end
 
   it 'should gracefully not allow unsupported providers' do
-    expect{
+    expect do
       AuthCodeExchanger.new(:some_fake_provider)
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 end

@@ -35,9 +35,10 @@ class AuthCodeExchanger
 
   def initialize(provider, client_options = {})
     unless VALID_PROVIDERS.include? provider
-      raise ArgumentError,
-            "Provider #{provider} not in supported parameter list:\n#{VALID_PROVIDERS.inspect}"
-      end
+      fail ArgumentError,
+           "Provider #{provider} not in supported parameter list:\n" <<
+               VALID_PROVIDERS.inspect
+    end
 
     @provider = provider
     build_provider_hash(client_options)
@@ -46,7 +47,6 @@ class AuthCodeExchanger
   def site_token_url
     @provider_hash[:site] + @provider_hash[:token_url]
   end
-
 
   def exchange(auth_code)
     # auth_code = params[:code]
@@ -60,8 +60,8 @@ class AuthCodeExchanger
     end
   end
 
-
   private
+
   def build_provider_hash(client_options)
     @provider_hash = PROVIDER_HASHES[provider]
     @provider_hash = client_options.delete(:client_id) if client_options[:client_id]

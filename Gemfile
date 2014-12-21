@@ -16,5 +16,3 @@ group :test do
 end
 
 gem 'doorkeeper', github: 'doorkeeper-gem/doorkeeper'
-# gem 'omniauth-oauth2', github: 'abradner/omniauth-oauth2'
-# gem 'omniauth-oauth2', path: '/Users/abradner/foogi/omniauth-oauth2'

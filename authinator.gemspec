@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Authinator::VERSION
   spec.authors       = ['Alexander Bradner']
   spec.email         = ['alex@bradner.net']
-  spec.summary       = 'TODO: Write a short summary. Required.'
-  spec.description   = 'TODO: Write a longer description. Optional.'
-  spec.homepage      = ''
+  spec.summary       = 'Single-Sign-On for the front and rails backend of a Single-Page-App'
+  # spec.description   = ''
+  spec.homepage      = 'https://github.com/abradner/authinator'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")

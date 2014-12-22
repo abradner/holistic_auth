@@ -19,11 +19,15 @@ module Authinator
   private
 
     def validator_presence?
-      valid = !(@email.nil? || @email.empty?) &&
-              !(@provider.nil? || @provider.empty?) &&
-              !(@auth_code.nil? || @auth_code.empty?)
-      return true if valid
+      email_present = present? @email
+      provider_present = present? @provider
+      auth_code_present = present? @auth_code
+
+      return true if email_present && provider_present && auth_code_present
       errors << 'A required param is missing'
+      errors << '"email" field missing' unless email_present
+      errors << '"provider" field missing' unless provider_present
+      errors << '"auth_code" field missing' unless auth_code_present
       false
     end
 
@@ -40,6 +44,15 @@ module Authinator
       return true if Authinator::AuthCodeExchanger.valid_providers.include? @provider.to_sym
       errors << "Provider '#{@provider}' is invalid"
       false
+    end
+
+    # recreate rails method
+    def present?(el)
+      !blank?(el)
+    end
+
+    def blank?(el)
+      el.nil? || el.empty?
     end
   end
 end

@@ -47,3 +47,7 @@ Style/Lambda:
 
 Style/TrailingComma:
   EnforcedStyleForMultiline: 'comma'
+
+# Avoid complex methods.
+Metrics/CyclomaticComplexity:
+  Max: 7

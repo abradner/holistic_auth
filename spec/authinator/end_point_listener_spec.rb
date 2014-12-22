@@ -61,6 +61,11 @@ describe Authinator::EndPointListener do
   it 'should return a human-readable list of errors if there are any' do
     listener = Authinator::EndPointListener.new({})
     listener.valid?
-    expect(listener.errors).to eq ['A required param is missing']
+    expect(listener.errors).to eq [
+      'A required param is missing',
+      '"email" field missing',
+      '"provider" field missing',
+      '"auth_code" field missing',
+    ]
   end
 end

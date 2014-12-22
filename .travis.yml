@@ -4,12 +4,12 @@ env:
     - JRUBY_OPTS="$JRUBY_OPTS --debug"
 language: ruby
 rvm:
+  - rbx-2
+  - jruby-19mode
   - 1.9.3
   - 2.0.0
   - 2.1
-  - jruby-19mode
   - jruby-head
-  - rbx-2
   - ruby-head
 matrix:
   allow_failures:

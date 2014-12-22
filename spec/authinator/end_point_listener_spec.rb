@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Authinator::EndPointListener do
-  before :all do
+  before :each do
     @creds_hash = {
-        email: 'test@foogi.me',
-        auth_code: '4/auth_code',
-        provider: 'google',
+      email: 'test@foogi.me',
+      auth_code: '4/auth_code',
+      provider: 'google',
     }
   end
   it 'should accept valid-looking credentials from the client' do
@@ -58,4 +58,9 @@ describe Authinator::EndPointListener do
     expect(listener2.valid?).to be_falsey
   end
 
+  it 'should return a human-readable list of errors if there are any' do
+    listener = Authinator::EndPointListener.new({})
+    listener.valid?
+    expect(listener.errors).to eq ['A required param is missing']
+  end
 end

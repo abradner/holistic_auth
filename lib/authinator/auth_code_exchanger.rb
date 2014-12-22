@@ -2,7 +2,7 @@
 # require 'omniauth-oauth2'
 require 'oauth2'
 
-# module Authinator
+module Authinator
 class AuthCodeExchanger
   VALID_PROVIDERS = [:stub, :google]
   STUB_SAMPLE_TOKEN = {
@@ -97,4 +97,4 @@ private
     )
   end
 end
-# end
+end

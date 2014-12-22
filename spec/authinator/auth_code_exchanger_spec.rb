@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'json'
 
-describe AuthCodeExchanger do
+describe Authinator::AuthCodeExchanger do
   before :all do
     @token_hash = {
       access_token: 'ya29.token',
@@ -29,7 +29,7 @@ describe AuthCodeExchanger do
     }
   end
   it 'should correctly process a generic (stub) token' do
-    ace = AuthCodeExchanger.new(:stub)
+    ace = Authinator::AuthCodeExchanger.new(:stub)
     stub_request(:post, ace.site_token_url).
       with(body: @test_env,
            headers: @req_headers).
@@ -45,8 +45,8 @@ describe AuthCodeExchanger do
   it 'should return an AccessToken for each provider' do
     klass = OAuth2::AccessToken
 
-    AuthCodeExchanger.valid_providers.each do |provider|
-      ace = AuthCodeExchanger.new(provider)
+    Authinator::AuthCodeExchanger.valid_providers.each do |provider|
+      ace = Authinator::AuthCodeExchanger.new(provider)
       stub_request(:post, ace.site_token_url).
         with(body: @test_env,
              headers: @req_headers).
@@ -57,7 +57,7 @@ describe AuthCodeExchanger do
   end
 
   it 'should correctly process a google token' do
-    ace = AuthCodeExchanger.new(:google)
+    ace = Authinator::AuthCodeExchanger.new(:google)
     stub_request(:post, ace.site_token_url).
       with(body: @test_env,
            headers: @req_headers).
@@ -72,18 +72,7 @@ describe AuthCodeExchanger do
 
   it 'should gracefully not allow unsupported providers' do
     expect do
-      AuthCodeExchanger.new(:some_fake_provider)
+      Authinator::AuthCodeExchanger.new(:some_fake_provider)
     end.to raise_error(ArgumentError)
   end
-end
-
-describe 'ClientTokenIssuer' do
-  pending
-  it 'should accept valid-looking credentials from the client'
-  it 'should exchange client-provided credentials for auth codes'
-  it 'should return an error to the client if the credentials were invalid'
-  it 'should verify that the tokens belong to the provided email before returning them'
-  it 'should generate our own set of tokens for the client if the provided ones exchanged successfully'
-
-  it 'should all integrate to follow a standard flow to auth the api client'
 end

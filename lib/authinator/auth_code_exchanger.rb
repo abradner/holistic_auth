@@ -62,9 +62,9 @@ module Authinator
   private
 
     def build_provider_hash(client_options)
-      @provider_hash = PROVIDER_HASHES[provider]
-      @provider_hash = client_options.delete(:client_id) if client_options[:client_id]
-      @provider_hash = client_options.delete(:client_secret) if client_options[:client_secret]
+      @provider_hash = PROVIDER_HASHES[@provider.to_sym]
+      @provider_hash[:client_id] = client_options.delete(:client_id) if client_options[:client_id]
+      @provider_hash[:client_secret] = client_options.delete(:client_secret) if client_options[:client_secret]
     end
 
     def exchange_with_google(code)

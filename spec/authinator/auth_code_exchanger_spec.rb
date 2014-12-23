@@ -75,4 +75,13 @@ describe Authinator::AuthCodeExchanger do
       Authinator::AuthCodeExchanger.new(:some_fake_provider)
     end.to raise_error(ArgumentError)
   end
+
+  it 'should correctly handle client information provided as a parameter' do
+    ace = Authinator::AuthCodeExchanger.new(:google, client_id: 'new_id', client_secret: 'new_secret')
+
+    stub_request(:post, ace.site_token_url).
+      with(body: @test_env.merge(client_id: 'new_id', client_secret: 'new_secret'),
+           headers: @req_headers).
+      to_return(@req_response)
+  end
 end

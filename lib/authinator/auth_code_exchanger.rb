@@ -12,6 +12,7 @@ module Authinator
     }
 
     attr_reader :provider
+    # attr_reader :client
 
     def self.valid_providers
       VALID_PROVIDERS

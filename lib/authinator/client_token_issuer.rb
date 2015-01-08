@@ -1,10 +1,5 @@
 module Authinator
   class ClientTokenIssuer
-    CREDS =  {
-      client_id: 'NeedToSpecifyClientID',
-      client_secret: 'NeedToSpecifyClientSecret',
-    }
-
     TEMP_RAW_INFO = {
       email_verified: true,
       email: 'a@b.c',
@@ -13,36 +8,27 @@ module Authinator
       profile: 'xyz',
     }.with_indifferent_access
 
-    VALID_APPLICATIONS = %i(ios_v1 ember_v1)
+    # Options can
+    def initialize(params, options = {})
+      @params = params.with_indifferent_access
+      provider_name = (options.delete :provider if options[:provider]) || (@params[:provider].present? ? @params[:provider].to_sym : nil)
+      unless Authinator.configuration.providers.include? provider_name
+        fail ArgumentError,
+             "Provider #{provider_name} not in supported parameter list:\n" <<
+               Authinator.configuration.providers.inspect
+      end
 
-    attr_accessor :valid_applications
+      @provider = Authinator.configuration.provider_for(provider_name)
 
-    def self.login_credentials
-      # can't call to_sym on nil, so:
-      provider = params[:provider].present? ? params[:provider].to_sym : nil
-      {
-        auth_code: params[:code],
-        provider: provider,
-      }
-    end
-
-    def self.application_name
-      params[:application_name].present? ? params[:application_name].to_sym : nil
-    end
-
-    def initialize(options = {})
-      @login_credentials = options.delete :login_credentials || ClientTokenIssuer.login_credentials
-      @app_name = options.delete :app_name || ClientTokenIssuer.application_name
-      @valid_applications = options.delete :valid_applications || VALID_APPLICATIONS
-
-      # Wrapped inside a Hash() call because if it's nil, merge will break
-      @provider_credentials = options.delete :provider_credentials || CREDS
+      @auth_code = (options.delete :auth_code if options[:auth_code]) || @params['code']
+      @app_name = (options.delete :app_name if options[:app_name]) || application_name
+      @valid_applications = (options.delete :valid_applications if options[:valid_applications]) || Authinator.configuration.valid_applications
     end
 
     def authorize!(options = {})
-      return { error: 'Invalid App' }, :bad_request unless VALID_APPLICATIONS.include? @app_name
+      return { error: "Invalid Application #{@app_name}" }, :bad_request unless @valid_applications.include? @app_name
 
-      handler = EndPointListener.new(@login_credentials.dup)
+      handler = EndPointListener.new(auth_code: @auth_code, provider: @provider)
 
       if handler.valid?
         return handle(options)
@@ -64,16 +50,8 @@ module Authinator
 
     def handle(options = {})
       application = Doorkeeper::Application.where(name: @app_name)
-      provider = @login_credentials[:provider]
-      token_issuer = AuthCodeExchanger.new(
-        provider,
-        client_id: @provider_credentials[provider][:client_id],
-        client_secret: @provider_credentials[provider][:client_secret],
-      )
-
-      provider_access_token = token_issuer.exchange(
-        @login_credentials[:auth_code],
-      )
+      token_issuer = AuthCodeExchanger.new @provider
+      provider_access_token = token_issuer.exchange @auth_code
 
       begin
         info = load_info
@@ -129,6 +107,12 @@ module Authinator
           'Google' => raw_info['profile'],
         },
       )
+    end
+
+  private
+
+    def application_name
+      @params['application_name'].present? ? @params['application_name'].to_sym : nil
     end
 
     def prune!(hash)

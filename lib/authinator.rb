@@ -1,3 +1,4 @@
+require 'active_support/all'
 require 'authinator/version'
 require 'authinator/provider'
 require 'authinator/configuration'

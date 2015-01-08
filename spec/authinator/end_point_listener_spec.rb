@@ -2,10 +2,18 @@ require 'spec_helper'
 
 describe Authinator::EndPointListener do
   before :each do
+    @stub_provider = Authinator::Provider.new(
+      :stub,
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
     @creds_hash = {
-      email: 'test@foogi.me',
       auth_code: '4/auth_code',
-      provider: 'google',
+      provider: @stub_provider,
     }
   end
   it 'should accept valid-looking credentials from the client' do
@@ -25,31 +33,30 @@ describe Authinator::EndPointListener do
     expect(listener.valid?).to be_falsey
   end
   it 'should return an error unless all three fields are provided' do
-    listener1 = Authinator::EndPointListener.new(@creds_hash.dup.tap { |hs| hs.delete(:email) }) # remove email
     listener2 = Authinator::EndPointListener.new(@creds_hash.dup.tap { |hs| hs.delete(:auth_code) }) # remove ac
     listener3 = Authinator::EndPointListener.new(@creds_hash.dup.tap { |hs| hs.delete(:provider) }) # remove prov
 
-    expect(listener1.valid?).to be_falsey
-    expect(listener2.valid?).to be_falsey
-    expect(listener3.valid?).to be_falsey
-  end
-  it 'should reject invalid emails' do
-    bad_email_hash1 = @creds_hash.merge(email: 'abc')
-    bad_email_hash2 = @creds_hash.merge(email: '')
-    bad_email_hash3 = @creds_hash.merge(email: 'a@')
-
-    listener1 = Authinator::EndPointListener.new(bad_email_hash1)
-    listener2 = Authinator::EndPointListener.new(bad_email_hash2)
-    listener3 = Authinator::EndPointListener.new(bad_email_hash3)
-
-    expect(listener1.valid?).to be_falsey
     expect(listener2.valid?).to be_falsey
     expect(listener3.valid?).to be_falsey
   end
 
   it 'should reject invalid providers' do
-    bad_provider_hash1 = @creds_hash.merge(provider: 'some_fake_provider')
-    bad_provider_hash2 = @creds_hash.merge(provider: '')
+    bad_provider_1 = Authinator::Provider.new(
+      :bad1,
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
+
+    bad_provider_2 = Authinator::Provider.new(
+      :bad2,
+    )
+
+    bad_provider_hash1 = @creds_hash.merge(provider: bad_provider_1)
+    bad_provider_hash2 = @creds_hash.merge(provider: bad_provider_2)
 
     listener1 = Authinator::EndPointListener.new(bad_provider_hash1)
     listener2 = Authinator::EndPointListener.new(bad_provider_hash2)
@@ -63,7 +70,6 @@ describe Authinator::EndPointListener do
     listener.valid?
     expect(listener.errors).to eq [
       'A required param is missing',
-      '"email" field missing',
       '"provider" field missing',
       '"auth_code" field missing',
     ]

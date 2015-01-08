@@ -3,6 +3,11 @@ require 'json'
 
 describe Authinator::AuthCodeExchanger do
   before :all do
+    Authinator.configure do |config|
+      config.add_secrets :google,
+                         client_id: 'cl_id',
+                         client_secret: 'cl_sec'
+    end
     @token_hash = {
       access_token: 'ya29.token',
       refresh_token: '1/refresh',
@@ -27,9 +32,29 @@ describe Authinator::AuthCodeExchanger do
       body: @token_hash.to_json,
       headers: { content_type: 'application/json' },
     }
+
+    @stub_provider = Authinator::Provider.new(
+      :stub,
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
+    @google_provider = Authinator::Provider.new(
+      :stub,
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
   end
+
   it 'should correctly process a generic (stub) token' do
-    ace = Authinator::AuthCodeExchanger.new(:stub)
+    ace = Authinator::AuthCodeExchanger.new(@stub_provider)
     stub_request(:post, ace.site_token_url).
       with(body: @test_env,
            headers: @req_headers).
@@ -45,7 +70,8 @@ describe Authinator::AuthCodeExchanger do
   it 'should return an AccessToken for each provider' do
     klass = OAuth2::AccessToken
 
-    Authinator::AuthCodeExchanger.valid_providers.each do |provider|
+    Authinator::AuthCodeExchanger.valid_providers.each do |provider_name|
+      provider = Authinator.configuration.provider_for provider_name
       ace = Authinator::AuthCodeExchanger.new(provider)
       stub_request(:post, ace.site_token_url).
         with(body: @test_env,
@@ -57,7 +83,7 @@ describe Authinator::AuthCodeExchanger do
   end
 
   it 'should correctly process a google token' do
-    ace = Authinator::AuthCodeExchanger.new(:google)
+    ace = Authinator::AuthCodeExchanger.new(@google_provider)
     stub_request(:post, ace.site_token_url).
       with(body: @test_env,
            headers: @req_headers).
@@ -68,20 +94,5 @@ describe Authinator::AuthCodeExchanger do
     expect(result.token).to eq @token_hash[:access_token]
     expect(result.refresh_token).to eq @token_hash[:refresh_token]
     expect(result.expires_in).to eq @token_hash[:expires_in]
-  end
-
-  it 'should gracefully not allow unsupported providers' do
-    expect do
-      Authinator::AuthCodeExchanger.new(:some_fake_provider)
-    end.to raise_error(ArgumentError)
-  end
-
-  it 'should correctly handle client information provided as a parameter' do
-    ace = Authinator::AuthCodeExchanger.new(:google, client_id: 'new_id', client_secret: 'new_secret')
-
-    stub_request(:post, ace.site_token_url).
-      with(body: @test_env.merge(client_id: 'new_id', client_secret: 'new_secret'),
-           headers: @req_headers).
-      to_return(@req_response)
   end
 end

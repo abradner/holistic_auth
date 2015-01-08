@@ -5,4 +5,21 @@ describe Authinator::ClientTokenIssuer do
   it 'should generate our own set of tokens for the client if the provided ones exchanged successfully'
 
   it 'should all integrate to follow a standard flow to auth the api client'
+
+  it 'should gracefully not allow unsupported providers' do
+    pending
+    expect do
+      Authinator::AuthCodeExchanger.new(:some_fake_provider)
+    end.to raise_error(ArgumentError)
+  end
+
+  it 'should correctly handle client information provided as a parameter' do
+    pending
+    ace = Authinator::AuthCodeExchanger.new(:google, client_id: 'new_id', client_secret: 'new_secret')
+
+    stub_request(:post, ace.site_token_url).
+      with(body: @test_env.merge(client_id: 'new_id', client_secret: 'new_secret'),
+           headers: @req_headers).
+      to_return(@req_response)
+  end
 end

@@ -54,7 +54,7 @@ module Authinator
       provider_access_token = token_issuer.exchange @auth_code
 
       begin
-        info = load_info
+        info = load_info(provider_access_token)
       rescue ArgumentError => _e
         return { error: 'Cannot create a Foogi account with an unverified email address' }, :bad_request
       end
@@ -88,10 +88,15 @@ module Authinator
       )
     end
 
-    def load_info
+    def load_info(access_token)
       # raw_info = provider_access_token.get('https://www.googleapis.com/plus/v1/people/me/openIdConnect').parsed
 
-      raw_info = TEMP_RAW_INFO
+      raw_info = case @provider.name
+                   when :google
+                     retrieve_user_from_google access_token
+                   when :stub
+                     TEMP_RAW_INFO
+                 end
 
       verified_email = raw_info['email_verified'] ? raw_info['email'] : nil
       fail ArgumentError, 'Email not verified' unless verified_email.present?
@@ -104,7 +109,7 @@ module Authinator
         image: raw_info['image_url'],
         uid: raw_info['sub'] || verified_email,
         urls: {
-          'Google' => raw_info['profile'],
+          @provider.name => raw_info['profile'],
         },
       )
     end
@@ -125,8 +130,7 @@ module Authinator
     def retrieve_user_from_google(token)
       client = GoogleClientBuilder.new('plus', 'v1', 1)
       _status, _headers, body = client.execute token, plus.people.get, userId: 'me'
-      profile = JSON.parse(body[0])
-      puts profile.inspect
+      JSON.parse(body[0])
     end
   end
 end

@@ -46,7 +46,7 @@ module Authinator
     def exchange_with_google(code)
       @client = OAuth2::Client.new(@provider.client_id, @provider.client_secret, @provider.to_hash)
 
-      token = @client.auth_code.get_token(code, redirect_uri: 'http://localhost:3000')
+      token = @client.auth_code.get_token(code, redirect_uri: 'http://localhost:4200')
 
       # response = token.get('/api/resource', :params => { 'query_foo' => 'bar' })
       # response.class.name

@@ -53,6 +53,7 @@ module Authinator
       token_issuer = AuthCodeExchanger.new @provider
       provider_access_token = token_issuer.exchange @auth_code
 
+      # raise provider_access_token.inspect
       begin
         info = load_info(provider_access_token)
       rescue ArgumentError => _e
@@ -91,12 +92,13 @@ module Authinator
     def load_info(access_token)
       # raw_info = provider_access_token.get('https://www.googleapis.com/plus/v1/people/me/openIdConnect').parsed
 
-      raw_info = case @provider.name
-                   when :google
-                     retrieve_user_from_google access_token
-                   when :stub
-                     TEMP_RAW_INFO
-                 end
+      # raw_info = case @provider.name
+      #              when :google
+      #                retrieve_user_from_google access_token
+      #              when :stub
+      #                TEMP_RAW_INFO
+      #            end
+      raw_info = TEMP_RAW_INFO
 
       verified_email = raw_info['email_verified'] ? raw_info['email'] : nil
       fail ArgumentError, 'Email not verified' unless verified_email.present?

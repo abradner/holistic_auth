@@ -16,3 +16,6 @@ group :test do
   gem 'simplecov', '>= 0.9'
   gem 'webmock'
 end
+
+# gem 'abstract_google_client', path: '/Users/abradner/foogi/google_client', require: 'google_client'
+gem 'abstract_google_client', github: 'abradner/google_client', require: 'google_client'

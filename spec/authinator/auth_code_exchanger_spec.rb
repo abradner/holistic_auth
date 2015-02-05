@@ -19,12 +19,12 @@ describe Authinator::AuthCodeExchanger do
       client_secret: 'cl_sec',
       code: '4/code',
       grant_type: 'authorization_code',
+      redirect_uri: 'http://localhost:4200',
     }
 
     @req_headers = {
       accept: '*/*',
       content_type: 'application/x-www-form-urlencoded',
-      user_agent: 'Faraday v0.9.0',
     }
 
     @req_response = {
@@ -60,7 +60,7 @@ describe Authinator::AuthCodeExchanger do
            headers: @req_headers).
       to_return(@req_response)
 
-    result = ace.exchange(@test_env[:code])
+    result = ace.exchange(@test_env[:code], @test_env[:redirect_uri])
 
     expect(result.token).to eq @token_hash[:access_token]
     expect(result.refresh_token).to eq @token_hash[:refresh_token]
@@ -78,7 +78,7 @@ describe Authinator::AuthCodeExchanger do
              headers: @req_headers).
         to_return(@req_response)
 
-      expect(ace.exchange(@test_env[:code])).to be_a klass
+      expect(ace.exchange(@test_env[:code], @test_env[:redirect_uri])).to be_a klass
     end
   end
 
@@ -89,7 +89,7 @@ describe Authinator::AuthCodeExchanger do
            headers: @req_headers).
       to_return(@req_response)
 
-    result = ace.exchange(@test_env[:code])
+    result = ace.exchange(@test_env[:code], @test_env[:redirect_uri])
 
     expect(result.token).to eq @token_hash[:access_token]
     expect(result.refresh_token).to eq @token_hash[:refresh_token]

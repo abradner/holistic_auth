@@ -24,6 +24,7 @@ module Authinator
       @provider = Authinator.configuration.provider_for(provider_name)
 
       @auth_code = (options.delete :auth_code if options[:auth_code]) || @params['code']
+      @redirect_uri = (options.delete :redirect_uri if options[:redirect_uri]) || @params['redirect_uri']
       @app_name = (options.delete :app_name if options[:app_name]) || application_name
       @valid_applications = (options.delete :valid_applications if options[:valid_applications]) || Authinator.configuration.valid_applications
     end
@@ -54,7 +55,7 @@ module Authinator
     def handle(options = {})
       application = Doorkeeper::Application.where(name: @app_name)
       token_issuer = AuthCodeExchanger.new @provider
-      provider_access_token = token_issuer.exchange @auth_code
+      provider_access_token = token_issuer.exchange @auth_code, @redirect_uri
 
       begin
         info = load_info(provider_access_token)
@@ -72,6 +73,7 @@ module Authinator
         resource_owner_id: user.id,
         expires_in: expires_in,
         use_refresh_token: true,
+        scopes: :user,
       )
 
       token_data = {

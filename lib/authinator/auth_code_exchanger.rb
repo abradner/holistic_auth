@@ -23,15 +23,16 @@ module Authinator
       @provider.site + @provider.token_url
     end
 
-    def exchange(auth_code)
+    def exchange(auth_code, redirect_uri)
       # auth_code = params[:code]
-      return if auth_code.nil? || auth_code.empty?
+      fail 'Cannot Exchange Auth Code (auth_code missing)' if auth_code.nil? || auth_code.empty?
+      fail 'Cannot Exchange Auth Code (redirect_uri missing)' if redirect_uri.nil? || redirect_uri.empty?
 
       case @provider.name
       when :google
-        exchange_with_google(auth_code)
+        exchange_with_google(auth_code, redirect_uri)
       when :stub
-        exchange_with_stub(auth_code)
+        exchange_with_stub(auth_code, redirect_uri)
       end
     end
 
@@ -43,10 +44,10 @@ module Authinator
     #   @provider_hash[:client_secret] = client_options.delete(:client_secret) if client_options[:client_secret]
     # end
 
-    def exchange_with_google(code)
+    def exchange_with_google(code, redirect_uri)
       @client = OAuth2::Client.new(@provider.client_id, @provider.client_secret, @provider.to_hash)
 
-      token = @client.auth_code.get_token(code, redirect_uri: 'http://localhost:4200')
+      token = @client.auth_code.get_token(code, redirect_uri: redirect_uri)
 
       # response = token.get('/api/resource', :params => { 'query_foo' => 'bar' })
       # response.class.name
@@ -55,7 +56,7 @@ module Authinator
       token
     end
 
-    def exchange_with_stub(_code)
+    def exchange_with_stub(_code, _redirect_uri)
       @client = OAuth2::Client.new(
           @provider.client_id,
           @provider.client_secret,

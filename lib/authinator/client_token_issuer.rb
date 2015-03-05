@@ -171,7 +171,7 @@ module Authinator
 
     def retrieve_user_from_google(access_token)
       client = GoogleClient::Builder.new('plus', 'v1', 1)
-         result = client.execute access_token,
+      result = client.execute access_token,
                               api_method: client.service.people.get,
                               parameters: {
                                 userId: 'me',

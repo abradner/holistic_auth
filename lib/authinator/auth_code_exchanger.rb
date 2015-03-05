@@ -58,15 +58,15 @@ module Authinator
 
     def exchange_with_stub(_code, _redirect_uri)
       @client = OAuth2::Client.new(
-          @provider.client_id,
-          @provider.client_secret,
+        @provider.client_id,
+        @provider.client_secret,
       )
 
       OAuth2::AccessToken.new(
-          @client,
-          STUB_SAMPLE_TOKEN[:token],
-          refresh_token: STUB_SAMPLE_TOKEN[:refresh_token],
-          expires_in: STUB_SAMPLE_TOKEN[:expires_in],
+        @client,
+        STUB_SAMPLE_TOKEN[:token],
+        refresh_token: STUB_SAMPLE_TOKEN[:refresh_token],
+        expires_in: STUB_SAMPLE_TOKEN[:expires_in],
       )
     end
   end

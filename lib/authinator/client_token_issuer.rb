@@ -70,7 +70,7 @@ module Authinator
 
       client_access_token = Doorkeeper::AccessToken.create!(
         application_id: application,
-        resource_owner_id: user.id,
+        resource_owner_id: user.to_param,
         expires_in: expires_in,
         use_refresh_token: true,
         scopes: :user,

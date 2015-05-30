@@ -1,19 +1,22 @@
-bundler_args: --without development
+bundler_args: "--without development"
 env:
   global:
-    - JRUBY_OPTS="$JRUBY_OPTS --debug"
+  - JRUBY_OPTS="$JRUBY_OPTS --debug"
 language: ruby
 rvm:
-  - rbx-2
-  - jruby-19mode
-  - 1.9.3
-  - 2.0.0
-  - 2.1
-  - jruby-head
-  - ruby-head
+- rbx-2
+- jruby-19mode
+- 1.9.3
+- 2.0.0
+- 2.1
+- jruby-head
+- ruby-head
 matrix:
   allow_failures:
-    - rvm: jruby-head
-    - rvm: ruby-head
+  - rvm: jruby-head
+  - rvm: ruby-head
   fast_finish: true
 sudo: false
+notifications:
+  slack:
+    secure: G6D51WJ/dtKpab6CUWMMEha3Joo5SwM4ycfYMAJFhmV4Zzs0wcPAWOU2jsFydYIUXkM8pkUnEn6scW3k01eTXZ7P/QYMMJqwZ6OvTH80x7mZj+WfD0vbQAg1lHYus32ADXI0F3IqTOlG/M4D9USe2TJmFI3sZ7+U0jPINOBLSWA=

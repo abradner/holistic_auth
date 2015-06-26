@@ -143,6 +143,7 @@ module Authinator
           provider: @provider.name.to_s,
           provider_uid: info[:uid],
         )
+        user.create_child_records!
       end
       acc
     end

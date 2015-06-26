@@ -67,6 +67,8 @@ module Authinator
       user = acc.user
       expires_in = options.delete(:expires_in) || 2.hours
       store_provider_credentials!(acc, provider_access_token)
+
+      acc.import_calendars!
       user.create_child_records!
 
       client_access_token = Doorkeeper::AccessToken.create!(

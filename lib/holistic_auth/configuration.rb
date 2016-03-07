@@ -1,8 +1,8 @@
-module Authinator
+module HolisticAuth
   # Exception to handle a missing initializer
   # class MissingConfiguration < StandardError
   #   def initialize
-  #     super('Configuration for authinator missing. Do you have an Authinator initializer?')
+  #     super('Configuration for holistic_auth missing. Do you have an HolisticAuth initializer?')
   #   end
   # end
 
@@ -26,30 +26,16 @@ module Authinator
     attr_accessor :valid_applications
 
     def initialize
-      @providers = {}
-      add_provider(
-        :stub,
-        client_id: 'cl_id',
-        client_secret: 'cl_sec',
-        site: 'https://example.org',
-        token_url: '/extoken',
-        api_key: 'api_key',
-        user_info_url: 'http://example.org/info',
-      )
-      add_provider(
-        :google,
-        site: 'https://accounts.google.com',
-        token_url: '/o/oauth2/token',
-        user_info_url: 'https://www.googleapis.com/plus/v1/people/me/openIdConnect',
-      )
+      @providers = {
+        stub: provider_for(:stub).new,
+        google: provider_for(:google).new,
+        ms_graph: provider_for(:ms_graph).new,
+      }
+
     end
 
     def providers
       @providers.keys
-    end
-
-    def add_provider(provider_name, options = {})
-      @providers[provider_name] = Provider.new(provider_name, options)
     end
 
     def add_secrets(provider_name, options = {})
@@ -58,14 +44,14 @@ module Authinator
         "#{provider_name} is not a configured provider.\n" \
         "Valid Providers:\n" <<
         providers.to_s,
-      ) if @providers[provider_name].blank?
+      ) if @providers[provider_name].nil?
 
       @providers[provider_name].add_secrets(options)
     end
 
     # A more abstracted way of accessing the providers
     def provider_for(provider_name)
-      @providers[provider_name]
+      "HolisticAuth::Providers::#{provider_name.to_s.camelize}".constantize
     end
   end
 end

@@ -1,4 +1,4 @@
-module Authinator
+module HolisticAuth
   class EmailNotVerifiedError < ArgumentError
   end
 
@@ -15,18 +15,18 @@ module Authinator
     def initialize(params, options = {})
       @params = params.with_indifferent_access
       provider_name = (options.delete :provider if options[:provider]) || (@params[:provider].present? ? @params[:provider].to_sym : nil)
-      unless Authinator.configuration.providers.include? provider_name
+      unless HolisticAuth.configuration.providers.include? provider_name
         fail ArgumentError,
              "Provider #{provider_name} not in supported parameter list:\n" <<
-               Authinator.configuration.providers.inspect
+               HolisticAuth.configuration.providers.inspect
       end
 
-      @provider = Authinator.configuration.provider_for(provider_name)
+      @provider = HolisticAuth.configuration.provider_for(provider_name)
 
       @auth_code = (options.delete :auth_code if options[:auth_code]) || @params['code']
       @redirect_uri = (options.delete :redirect_uri if options[:redirect_uri]) || @params['redirect_uri']
       @app_name = (options.delete :app_name if options[:app_name]) || application_name
-      @valid_applications = (options.delete :valid_applications if options[:valid_applications]) || Authinator.configuration.valid_applications
+      @valid_applications = (options.delete :valid_applications if options[:valid_applications]) || HolisticAuth.configuration.valid_applications
     end
 
     def authorize!(options = {})
@@ -54,8 +54,7 @@ module Authinator
 
     def handle(options = {})
       application = Doorkeeper::Application.where(name: @app_name)
-      token_issuer = AuthCodeExchanger.new @provider
-      provider_access_token = token_issuer.exchange @auth_code, @redirect_uri
+      provider_access_token = @provider.exchange @auth_code, @redirect_uri
 
       begin
         info = load_info(provider_access_token)

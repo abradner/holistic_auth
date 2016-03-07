@@ -1,6 +1,6 @@
 AllCops:
   Exclude:
-    - 'authinator.gemspec'
+    - 'holistic_auth.gemspec'
 
 Metrics/BlockNesting:
   Max: 2

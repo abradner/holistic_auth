@@ -1,4 +1,4 @@
-module Authinator
+module HolisticAuth
   class EndPointListener
     attr_reader :provider, :auth_code, :options, :errors
 
@@ -10,8 +10,8 @@ module Authinator
     end
 
     def valid?
-      validator_presence? &&
-        validator_valid_provider?
+      validator_presence? # &&
+      #   validator_valid_provider?
     end
 
   private
@@ -27,11 +27,11 @@ module Authinator
       false
     end
 
-    def validator_valid_provider?
-      return true if Authinator.configuration.providers.include? @provider.name
-      errors << "Provider '#{@provider}' is invalid"
-      false
-    end
+    # def validator_valid_provider?
+    #   return true if HolisticAuth.configuration.providers.include? @provider.name
+    #   errors << "Provider '#{@provider}' is invalid"
+    #   false
+    # end
 
     # recreate rails method
     def present?(el)

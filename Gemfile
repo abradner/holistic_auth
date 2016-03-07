@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in authinator.gemspec
+# Specify your gem's dependencies in holistic_auth.gemspec
 gemspec
 
 gem 'rake'

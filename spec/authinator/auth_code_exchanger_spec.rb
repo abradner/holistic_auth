@@ -1,12 +1,18 @@
 require 'spec_helper'
 require 'json'
 
-describe Authinator::AuthCodeExchanger do
+describe "Providers" do
   before :all do
-    Authinator.configure do |config|
+    @secrets = {
+      client_id: ((0...50).map { ('a'..'z').to_a[rand(26)] }.join),
+      client_secret: ((0...50).map { ('a'..'z').to_a[rand(26)] }.join),
+      tenant_id: ((0...50).map { ('a'..'z').to_a[rand(26)] }.join),
+    }
+
+    HolisticAuth.configure do |config|
       config.add_secrets :google,
-                         client_id: 'cl_id',
-                         client_secret: 'cl_sec'
+                         client_id: @secrets[:client_id],
+                         client_secret: @secrets[:client_secret]
     end
     @token_hash = {
       access_token: 'ya29.token',
@@ -15,8 +21,8 @@ describe Authinator::AuthCodeExchanger do
       token_type: 'Bearer',
     }
     @test_env = {
-      client_id: 'cl_id',
-      client_secret: 'cl_sec',
+      client_id: @secrets[:client_id],
+      client_secret: @secrets[:client_secret],
       code: '4/code',
       grant_type: 'authorization_code',
       redirect_uri: 'http://localhost:4200',
@@ -33,34 +39,32 @@ describe Authinator::AuthCodeExchanger do
       headers: { content_type: 'application/json' },
     }
 
-    @stub_provider = Authinator::Provider.new(
-      :stub,
-      client_id: 'cl_id',
-      client_secret: 'cl_sec',
+    @stub_provider = HolisticAuth::Providers::Stub.new(
+      client_id: @secrets[:client_id],
+      client_secret: @secrets[:client_secret],
       site: 'https://example.org',
       token_url: '/extoken',
       api_key: 'api_key',
       user_info_url: 'http://example.org/info',
     )
-    @google_provider = Authinator::Provider.new(
-      :stub,
-      client_id: 'cl_id',
-      client_secret: 'cl_sec',
+    @google_provider = HolisticAuth::Providers::Google.new(
+      client_id: @secrets[:client_id],
+      client_secret: @secrets[:client_secret],
       site: 'https://example.org',
       token_url: '/extoken',
       api_key: 'api_key',
       user_info_url: 'http://example.org/info',
     )
+
   end
 
   it 'should correctly process a generic (stub) token' do
-    ace = Authinator::AuthCodeExchanger.new(@stub_provider)
-    stub_request(:post, ace.site_token_url).
+    stub_request(:post, @stub_provider.site_token_url).
       with(body: @test_env,
            headers: @req_headers).
       to_return(@req_response)
 
-    result = ace.exchange(@test_env[:code], @test_env[:redirect_uri])
+    result = @stub_provider.exchange(@test_env[:code], @test_env[:redirect_uri])
 
     expect(result.token).to eq @token_hash[:access_token]
     expect(result.refresh_token).to eq @token_hash[:refresh_token]
@@ -70,26 +74,30 @@ describe Authinator::AuthCodeExchanger do
   it 'should return an AccessToken for each provider' do
     klass = OAuth2::AccessToken
 
-    Authinator::AuthCodeExchanger.valid_providers.each do |provider_name|
-      provider = Authinator.configuration.provider_for provider_name
-      ace = Authinator::AuthCodeExchanger.new(provider)
-      stub_request(:post, ace.site_token_url).
+    HolisticAuth.configuration.providers.each do |provider_name|
+      provider = HolisticAuth.configuration.provider_for(provider_name).new
+      expect(provider).to be_kind_of HolisticAuth::Providers::GenericProvider
+
+      provider.add_secrets(@secrets.dup)
+      expect(provider.client_id).to eq @secrets[:client_id]
+      expect(provider.client_secret).to eq @secrets[:client_secret]
+
+      stub_request(:post, provider.site_token_url).
         with(body: @test_env,
              headers: @req_headers).
         to_return(@req_response)
 
-      expect(ace.exchange(@test_env[:code], @test_env[:redirect_uri])).to be_a klass
+      expect(provider.exchange(@test_env[:code], @test_env[:redirect_uri])).to be_kind_of klass
     end
   end
 
   it 'should correctly process a google token' do
-    ace = Authinator::AuthCodeExchanger.new(@google_provider)
-    stub_request(:post, ace.site_token_url).
+    stub_request(:post, @google_provider.site_token_url).
       with(body: @test_env,
            headers: @req_headers).
       to_return(@req_response)
 
-    result = ace.exchange(@test_env[:code], @test_env[:redirect_uri])
+    result = @google_provider.exchange(@test_env[:code], @test_env[:redirect_uri])
 
     expect(result.token).to eq @token_hash[:access_token]
     expect(result.refresh_token).to eq @token_hash[:refresh_token]

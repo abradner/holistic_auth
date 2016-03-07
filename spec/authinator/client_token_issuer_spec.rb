@@ -1,4 +1,4 @@
-describe Authinator::ClientTokenIssuer do
+describe HolisticAuth::ClientTokenIssuer do
   it 'should exchange client-provided credentials for auth codes'
   it 'should gracefully handle and return error condition if client-provided credentials are invalid'
   it 'should verify that the tokens belong to the provided email before returning them'
@@ -9,13 +9,13 @@ describe Authinator::ClientTokenIssuer do
   it 'should gracefully not allow unsupported providers' do
     pending
     expect do
-      Authinator::AuthCodeExchanger.new(:some_fake_provider)
+      HolisticAuth::AuthCodeExchanger.new(:some_fake_provider)
     end.to raise_error(ArgumentError)
   end
 
   it 'should correctly handle client information provided as a parameter' do
     pending
-    ace = Authinator::AuthCodeExchanger.new(:google, client_id: 'new_id', client_secret: 'new_secret')
+    ace = HolisticAuth::AuthCodeExchanger.new(:google, client_id: 'new_id', client_secret: 'new_secret')
 
     stub_request(:post, ace.site_token_url).
       with(body: @test_env.merge(client_id: 'new_id', client_secret: 'new_secret'),

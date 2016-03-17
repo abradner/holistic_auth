@@ -39,6 +39,51 @@ describe HolisticAuth::EndPointListener do
     expect(listener3.valid?).to be_falsey
   end
 
+  it 'should reject invalid providers' do
+    bad_provider_1 = Hash.new(
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
+
+    bad_provider_hash1 = @creds_hash.merge(provider: bad_provider_1)
+
+    listener1 = HolisticAuth::EndPointListener.new(bad_provider_hash1)
+
+    expect(listener1.valid?).to be_falsey
+  end
+
+  it 'should accept valid providers' do
+    provider_1 = HolisticAuth::Providers::Stub.new(
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
+    provider_2 = HolisticAuth::Providers::Google.new(
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
+
+    provider_hash1 = @creds_hash.merge(provider: provider_1)
+    provider_hash2 = @creds_hash.merge(provider: provider_2)
+
+    listener1 = HolisticAuth::EndPointListener.new(provider_hash1)
+    listener2 = HolisticAuth::EndPointListener.new(provider_hash2)
+
+    expect(listener1.valid?).to be_truthy
+    expect(listener2.valid?).to be_truthy
+  end
+
   it 'should return a human-readable list of errors if there are any' do
     listener = HolisticAuth::EndPointListener.new({})
     listener.valid?

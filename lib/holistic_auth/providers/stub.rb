@@ -28,6 +28,11 @@ module HolisticAuth
         SETTINGS
       end
 
+      def name
+        :stub
+      end
+
+
       def exchange(_, __)
         @client = OAuth2::Client.new(
           client_id,
@@ -40,6 +45,16 @@ module HolisticAuth
           refresh_token: STUB_SAMPLE_TOKEN[:refresh_token],
           expires_in: STUB_SAMPLE_TOKEN[:expires_in],
         )
+      end
+
+      def retrieve_user_info(_access_token)
+        {
+          email_verified: true,
+          email: 'a@b.c',
+          given_name: 'first',
+          family_name: 'last',
+          profile: 'xyz',
+        }.with_indifferent_access
       end
     end
   end

@@ -30,7 +30,7 @@ module HolisticAuth
         @tenant_id = options.delete :tenant_id if options[:tenant_id]
         @additional_parameters.merge!(options.delete :additional_parameters) if options[:additional_parameters]
       end
-      
+
       def settings
         {}
       end
@@ -45,22 +45,28 @@ module HolisticAuth
       end
 
       def exchange(auth_code, redirect_uri)
-        fail 'Cannot Exchange Auth Code (auth_code missing)' if auth_code.nil? || auth_code.empty?
-        fail 'Cannot Exchange Auth Code (redirect_uri missing)' if redirect_uri.nil? || redirect_uri.empty?
+        errors = []
+        errors << 'auth_code missing' if auth_code.blank?
+        errors << 'redirect_uri missing' if redirect_uri.blank?
+        errors << 'Client ID not set' if client_id.blank?
+        errors << 'Client Secret not set' if client_secret.blank?
+
+        fail "Cannot exchange auth code:\n#{errors}" if errors.present?
 
         @oauth2_client = OAuth2::Client.new(client_id, client_secret, to_hash)
+        @oauth2_client.auth_code.get_token(auth_code, redirect_uri: redirect_uri)
+      end
 
-        token = @oauth2_client.auth_code.get_token(auth_code, redirect_uri: redirect_uri)
+      def retrieve_user_info(*_params)
+        fail 'Not implemented'
+      end
 
-        # response = token.get('/api/resource', :params => { 'query_foo' => 'bar' })
-        # response.class.name
-        # => OAuth2::Response
-
-        token
+      def name(*_params)
+        fail 'Generic provider doesn\'t have a name'
       end
 
       def full_site_url
-        fail "site not specified for class #{self.to_s}" unless site.present?
+        fail "site not specified for class #{self}" unless site.present?
         site
       end
 
@@ -78,6 +84,10 @@ module HolisticAuth
           user_info_url: @user_info_url,
           additional_parameters: @additional_parameters,
         }
+      end
+
+      def present?
+        !empty?
       end
 
       def empty?

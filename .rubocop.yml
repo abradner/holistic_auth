@@ -11,7 +11,7 @@ Metrics/LineLength:
 
 Metrics/MethodLength:
   CountComments: false
-  Max: 15
+  Max: 20
 
 Metrics/ParameterLists:
   Max: 4
@@ -51,3 +51,9 @@ Style/TrailingComma:
 # Avoid complex methods.
 Metrics/CyclomaticComplexity:
   Max: 7
+
+Metrics/AbcSize:
+  Max: 20
+
+Style/CaseIndentation:
+  IndentOneStep: true

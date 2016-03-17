@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe HolisticAuth::ClientTokenIssuer do
   it 'should exchange client-provided credentials for auth codes'
   it 'should gracefully handle and return error condition if client-provided credentials are invalid'

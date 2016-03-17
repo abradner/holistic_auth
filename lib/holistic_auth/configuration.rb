@@ -31,22 +31,31 @@ module HolisticAuth
         google: provider_for(:google).new,
         ms_graph: provider_for(:ms_graph).new,
       }
-
     end
 
     def providers
       @providers.keys
     end
 
+    def provider(provider_name)
+      test_for_provider!(provider_name)
+      @providers[provider_name]
+    end
+
     def add_secrets(provider_name, options = {})
+      test_for_provider!(provider_name)
+      @providers[provider_name].add_secrets(options)
+    end
+
+  private
+
+    def test_for_provider!(provider_name)
       fail(
         ArgumentError,
         "#{provider_name} is not a configured provider.\n" \
         "Valid Providers:\n" <<
-        providers.to_s,
+          providers.to_s,
       ) if @providers[provider_name].nil?
-
-      @providers[provider_name].add_secrets(options)
     end
 
     # A more abstracted way of accessing the providers

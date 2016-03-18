@@ -33,6 +33,11 @@ module HolisticAuth
 
       def process_info(hash)
         fail "Can't process empty user info" unless hash.is_a? Hash
+
+        if hash.has_key?('error')
+          fail "Could not process user info: \n #{hash['error']['code']}: #{hash['error']['message']}"
+        end
+
         {
           email_verified: hash['mail'].present?,
           email: hash['mail'],

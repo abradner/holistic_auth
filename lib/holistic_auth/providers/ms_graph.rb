@@ -3,7 +3,7 @@ module HolisticAuth
     class MsGraph < GenericProvider
       GRAPH_RESOURCE = 'https://graph.microsoft.com'
       DEFAULT_CONTENT_TYPE = 'application/json;odata.metadata=minimal;odata.streaming=true'
-      API_VERSION = 'v1.0'
+      API_VERSION = 'beta'
 
       SETTINGS = {
         site: 'https://login.microsoftonline.com',

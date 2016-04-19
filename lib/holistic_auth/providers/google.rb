@@ -23,12 +23,12 @@ module HolisticAuth
                                   userId: 'me',
                                 }
 
-        process_google_info JSON.parse(result.body)
+        process_user_info JSON.parse(result.body)
       end
 
     private
 
-      def process_google_info(hash)
+      def process_user_info(hash)
         {
           email_verified: hash['emails'].first['type'].eql?('account'),
           email: hash['emails'].first['value'],

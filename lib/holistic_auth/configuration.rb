@@ -50,7 +50,7 @@ module HolisticAuth
   private
 
     def test_for_provider!(provider_name)
-      fail(
+      raise(
         ArgumentError,
         "#{provider_name} is not a configured provider.\n" \
         "Valid Providers:\n" <<

@@ -8,13 +8,13 @@ module HolisticAuth
         token_url: '/extoken',
         api_key: 'api_key',
         user_info_url: 'http://example.org/info',
-      }
+      }.freeze
 
       STUB_SAMPLE_TOKEN = {
         token: 'ya29.token',
         refresh_token: '1/refresh',
         expires_in: 3600,
-      }
+      }.freeze
 
       def initialize(options = {})
         super(options)
@@ -31,7 +31,6 @@ module HolisticAuth
       def name
         :stub
       end
-
 
       def exchange(_, __)
         @client = OAuth2::Client.new(

@@ -5,9 +5,9 @@ module HolisticAuth
       @params = params.with_indifferent_access
       provider_name = get_provider_name(options)
       unless HolisticAuth.configuration.providers.include? provider_name
-        fail ArgumentError,
-             "Provider #{provider_name} not in supported provider list:\n" <<
-               HolisticAuth.configuration.providers.inspect
+        raise ArgumentError,
+              "Provider #{provider_name} not in supported provider list:\n" <<
+              HolisticAuth.configuration.providers.inspect
       end
 
       @provider = HolisticAuth.configuration.provider(provider_name)
@@ -18,12 +18,10 @@ module HolisticAuth
     def authorize!(options = {})
       return { error: "Invalid Application #{@app_name}" }, :bad_request unless @valid_applications.include? @app_name
 
-      handler = EndPointListener.new(auth_code: @auth_code, provider: @provider)
-      if handler.valid?
-        return handle(options)
-      else
-        fail "End point handler not valid:\n #{handler.inspect}"
-      end
+      validator = EndPointListener.new(auth_code: @auth_code, provider: @provider)
+      raise "End provider/config not valid:\n #{validator.inspect}" unless validator.valid?
+
+      handle(options)
     end
 
     def handle(options = {})
@@ -51,7 +49,7 @@ module HolisticAuth
       raw_info = @provider.retrieve_user_info(access_token)
 
       verified_email = raw_info[:email_verified] ? raw_info[:email] : nil
-      fail EmailNotVerifiedError, 'Email not verified' unless verified_email.present?
+      raise EmailNotVerifiedError, 'Email not verified' unless verified_email.present?
 
       raw_info
     end

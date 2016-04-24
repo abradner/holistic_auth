@@ -45,7 +45,10 @@ Style/Encoding:
 Style/Lambda:
   Enabled: false
 
-Style/TrailingComma:
+Style/TrailingCommaInLiteral:
+  EnforcedStyleForMultiline: 'comma'
+
+Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: 'comma'
 
 # Avoid complex methods.

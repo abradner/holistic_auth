@@ -20,7 +20,7 @@ module HolisticAuth
       end
 
       def store_provider_credentials!(access_token)
-        fail 'Account not discovered yet!' unless @account.present?
+        raise 'Account not discovered yet!' unless @account.present?
 
         @account.replace_credential!(
           access_token: access_token.token,
@@ -48,7 +48,7 @@ module HolisticAuth
       def create_user!
         User.create!(
           primary_email: info[:email], display_name: info[:display_name],
-          name: info[:name], picture_url: info[:picture_url],
+          name: info[:name], picture_url: info[:picture_url]
         )
       end
     end

@@ -1,9 +1,9 @@
 module HolisticAuth
   module Providers
     class MsGraph < GenericProvider
-      GRAPH_RESOURCE = 'https://graph.microsoft.com'
-      DEFAULT_CONTENT_TYPE = 'application/json;odata.metadata=minimal;odata.streaming=true'
-      API_VERSION = 'beta'
+      GRAPH_RESOURCE = 'https://graph.microsoft.com'.freeze
+      DEFAULT_CONTENT_TYPE = 'application/json;odata.metadata=minimal;odata.streaming=true'.freeze
+      API_VERSION = 'beta'.freeze
 
       SETTINGS = {
         site: 'https://login.microsoftonline.com',
@@ -12,7 +12,7 @@ module HolisticAuth
         additional_parameters: {
           resource: GRAPH_RESOURCE,
         },
-      }
+      }.freeze
 
       def settings
         SETTINGS
@@ -32,10 +32,10 @@ module HolisticAuth
       end
 
       def process_info(hash)
-        fail "Can't process empty user info" unless hash.is_a? Hash
+        raise "Can't process empty user info" unless hash.is_a? Hash
 
-        if hash.has_key?('error')
-          fail "Could not process user info: \n #{hash['error']['code']}: #{hash['error']['message']}"
+        if hash.key?('error')
+          raise "Could not process user info: \n #{hash['error']['code']}: #{hash['error']['message']}"
         end
 
         {
@@ -79,7 +79,7 @@ module HolisticAuth
             when :post
               http.post(full_endpoint, body, headers)
             else
-              fail "method #{method} not implemented"
+              raise "method #{method} not implemented"
           end
 
         response

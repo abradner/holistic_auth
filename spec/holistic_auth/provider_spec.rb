@@ -4,9 +4,9 @@ require 'json'
 describe 'Providers' do
   before :all do
     @secrets = {
-      client_id: ((0...50).map { ('a'..'z').to_a[rand(26)] }.join),
-      client_secret: ((0...50).map { ('a'..'z').to_a[rand(26)] }.join),
-      tenant_id: ((0...50).map { ('a'..'z').to_a[rand(26)] }.join),
+      client_id: (0...50).map { ('a'..'z').to_a[rand(26)] }.join,
+      client_secret: (0...50).map { ('a'..'z').to_a[rand(26)] }.join,
+      tenant_id: (0...50).map { ('a'..'z').to_a[rand(26)] }.join,
     }
 
     HolisticAuth.configure do |config|

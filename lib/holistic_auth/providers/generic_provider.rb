@@ -51,22 +51,22 @@ module HolisticAuth
         errors << 'Client ID not set' if client_id.blank?
         errors << 'Client Secret not set' if client_secret.blank?
 
-        fail "Cannot exchange auth code:\n#{errors}" if errors.present?
+        raise "Cannot exchange auth code:\n#{errors}" if errors.present?
 
         @oauth2_client = OAuth2::Client.new(client_id, client_secret, to_hash)
         @oauth2_client.auth_code.get_token(auth_code, redirect_uri: redirect_uri)
       end
 
       def retrieve_user_info(*_params)
-        fail 'Not implemented'
+        raise 'Not implemented'
       end
 
       def name(*_params)
-        fail 'Generic provider doesn\'t have a name'
+        raise 'Generic provider doesn\'t have a name'
       end
 
       def full_site_url
-        fail "site not specified for class #{self}" unless site.present?
+        raise "site not specified for class #{self}" unless site.present?
         site
       end
 
@@ -94,7 +94,7 @@ module HolisticAuth
         site.nil? || token_url.nil?
       end
 
-      alias_method :inspect, :to_hash
+      alias inspect to_hash
     end
   end
 end

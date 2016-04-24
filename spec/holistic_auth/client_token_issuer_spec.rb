@@ -31,7 +31,7 @@ describe HolisticAuth::ClientTokenIssuer do
   it 'should allow supported providers' do
     expect do
       HolisticAuth::ClientTokenIssuer.new(provider: :google)
-    end.not_to raise_error()
+    end.not_to raise_error
   end
 
   it 'should correctly handle client information provided as a parameter' do

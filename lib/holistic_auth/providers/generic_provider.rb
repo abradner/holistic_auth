@@ -28,7 +28,7 @@ module HolisticAuth
         @client_secret = options.delete :client_secret if options[:client_secret]
         @api_key = options.delete :api_key if options[:api_key]
         @tenant_id = options.delete :tenant_id if options[:tenant_id]
-        @additional_parameters.merge!(options.delete :additional_parameters) if options[:additional_parameters]
+        @additional_parameters.merge!(options.delete(:additional_parameters)) if options[:additional_parameters]
       end
 
       def settings

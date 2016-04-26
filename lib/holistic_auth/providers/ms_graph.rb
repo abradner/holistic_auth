@@ -15,7 +15,7 @@ module HolisticAuth
       }.freeze
 
       def settings
-        SETTINGS
+        self.class::SETTINGS
       end
 
       def name
@@ -27,16 +27,12 @@ module HolisticAuth
       end
 
       def retrieve_user_info(access_token)
-        result = query! :get, access_token.token, SETTINGS[:user_info_url]
+        result = query! :get, access_token.token, settings[:user_info_url]
         process_info JSON.parse(result.body)
       end
 
       def process_info(hash)
-        raise "Can't process empty user info" unless hash.is_a? Hash
-
-        if hash.key?('error')
-          raise "Could not process user info: \n #{hash['error']['code']}: #{hash['error']['message']}"
-        end
+        sanity_check! hash
 
         {
           email_verified: hash['mail'].present?,
@@ -83,6 +79,14 @@ module HolisticAuth
           end
 
         response
+      end
+
+      def sanity_check!(hash)
+        raise "Can't process empty user info" unless hash.is_a? Hash
+
+        if hash.key?('error')
+          raise "Could not process user info: \n #{hash['error']['code']}: #{hash['error']['message']}"
+        end
       end
     end
   end

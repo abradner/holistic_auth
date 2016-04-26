@@ -9,6 +9,7 @@ require 'holistic_auth/providers/generic_provider'
 require 'holistic_auth/providers/stub'
 require 'holistic_auth/providers/google'
 require 'holistic_auth/providers/ms_graph'
+require 'holistic_auth/providers/outlook'
 
 require 'holistic_auth/orm_handlers/active_record'
 

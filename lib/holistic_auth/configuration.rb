@@ -30,6 +30,7 @@ module HolisticAuth
         stub: provider_for(:stub).new,
         google: provider_for(:google).new,
         ms_graph: provider_for(:ms_graph).new,
+        outlook: provider_for(:outlook).new,
       }
     end
 

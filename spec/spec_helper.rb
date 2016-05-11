@@ -18,7 +18,7 @@ end
 require 'rspec'
 require 'rack/test'
 require 'webmock/rspec'
-require 'authinator' # and any other gems you need
+require 'holistic_auth' # and any other gems you need
 
 RSpec.configure do |config|
   config.expect_with :rspec do |c|

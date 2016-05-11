@@ -1,9 +1,8 @@
 require 'spec_helper'
 
-describe Authinator::EndPointListener do
+describe HolisticAuth::EndPointListener do
   before :each do
-    @stub_provider = Authinator::Provider.new(
-      :stub,
+    @stub_provider = HolisticAuth::Providers::Stub.new(
       client_id: 'cl_id',
       client_secret: 'cl_sec',
       site: 'https://example.org',
@@ -17,7 +16,7 @@ describe Authinator::EndPointListener do
     }
   end
   it 'should accept valid-looking credentials from the client' do
-    listener = Authinator::EndPointListener.new(@creds_hash)
+    listener = HolisticAuth::EndPointListener.new(@creds_hash)
     expect(listener.valid?).to be_truthy
   end
 
@@ -29,20 +28,19 @@ describe Authinator::EndPointListener do
       a: 'b',
       c: 'd',
     }
-    listener = Authinator::EndPointListener.new(bad_creds_hash)
+    listener = HolisticAuth::EndPointListener.new(bad_creds_hash)
     expect(listener.valid?).to be_falsey
   end
   it 'should return an error unless all three fields are provided' do
-    listener2 = Authinator::EndPointListener.new(@creds_hash.dup.tap { |hs| hs.delete(:auth_code) }) # remove ac
-    listener3 = Authinator::EndPointListener.new(@creds_hash.dup.tap { |hs| hs.delete(:provider) }) # remove prov
+    listener2 = HolisticAuth::EndPointListener.new(@creds_hash.dup.tap { |hs| hs.delete(:auth_code) }) # remove ac
+    listener3 = HolisticAuth::EndPointListener.new(@creds_hash.dup.tap { |hs| hs.delete(:provider) }) # remove prov
 
     expect(listener2.valid?).to be_falsey
     expect(listener3.valid?).to be_falsey
   end
 
   it 'should reject invalid providers' do
-    bad_provider_1 = Authinator::Provider.new(
-      :bad1,
+    bad_provider_1 = Hash.new(
       client_id: 'cl_id',
       client_secret: 'cl_sec',
       site: 'https://example.org',
@@ -51,22 +49,43 @@ describe Authinator::EndPointListener do
       user_info_url: 'http://example.org/info',
     )
 
-    bad_provider_2 = Authinator::Provider.new(
-      :bad2,
-    )
-
     bad_provider_hash1 = @creds_hash.merge(provider: bad_provider_1)
-    bad_provider_hash2 = @creds_hash.merge(provider: bad_provider_2)
 
-    listener1 = Authinator::EndPointListener.new(bad_provider_hash1)
-    listener2 = Authinator::EndPointListener.new(bad_provider_hash2)
+    listener1 = HolisticAuth::EndPointListener.new(bad_provider_hash1)
 
     expect(listener1.valid?).to be_falsey
-    expect(listener2.valid?).to be_falsey
+  end
+
+  it 'should accept valid providers' do
+    provider_1 = HolisticAuth::Providers::Stub.new(
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
+    provider_2 = HolisticAuth::Providers::Google.new(
+      client_id: 'cl_id',
+      client_secret: 'cl_sec',
+      site: 'https://example.org',
+      token_url: '/extoken',
+      api_key: 'api_key',
+      user_info_url: 'http://example.org/info',
+    )
+
+    provider_hash1 = @creds_hash.merge(provider: provider_1)
+    provider_hash2 = @creds_hash.merge(provider: provider_2)
+
+    listener1 = HolisticAuth::EndPointListener.new(provider_hash1)
+    listener2 = HolisticAuth::EndPointListener.new(provider_hash2)
+
+    expect(listener1.valid?).to be_truthy
+    expect(listener2.valid?).to be_truthy
   end
 
   it 'should return a human-readable list of errors if there are any' do
-    listener = Authinator::EndPointListener.new({})
+    listener = HolisticAuth::EndPointListener.new({})
     listener.valid?
     expect(listener.errors).to eq [
       'A required param is missing',

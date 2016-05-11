@@ -1,7 +1,6 @@
-module Authinator
+module HolisticAuth
   class EndPointListener
     attr_reader :provider, :auth_code, :options, :errors
-
     def initialize(hash = {})
       @provider = hash.delete :provider
       @auth_code = hash.delete :auth_code
@@ -17,8 +16,8 @@ module Authinator
   private
 
     def validator_presence?
-      provider_present = present? @provider
-      auth_code_present = present? @auth_code
+      provider_present = @provider.present?
+      auth_code_present = @auth_code.present?
 
       return true if provider_present && auth_code_present
       errors << 'A required param is missing'
@@ -28,18 +27,9 @@ module Authinator
     end
 
     def validator_valid_provider?
-      return true if Authinator.configuration.providers.include? @provider.name
+      return true if @provider.is_a? HolisticAuth::Providers::GenericProvider
       errors << "Provider '#{@provider}' is invalid"
       false
-    end
-
-    # recreate rails method
-    def present?(el)
-      !blank?(el)
-    end
-
-    def blank?(el)
-      el.nil? || el.empty?
     end
   end
 end

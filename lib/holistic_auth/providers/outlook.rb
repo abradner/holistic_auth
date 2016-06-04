@@ -1,15 +1,15 @@
 module HolisticAuth
   module Providers
     class Outlook < MsGraph
-      GRAPH_RESOURCE = 'https://outlook.office.com/api/'.freeze
+      RESOURCE = 'https://outlook.office.com'.freeze
       API_VERSION = 'v2.0'.freeze
 
       SETTINGS = {
         site: 'https://login.microsoftonline.com',
-        token_url: 'oauth2/token',
-        user_info_url: URI("#{GRAPH_RESOURCE}/#{API_VERSION}/me"),
+        token_url: 'oauth2/v2.0/token',
+        user_info_url: URI("#{RESOURCE}/api/#{API_VERSION}/Me"),
         additional_parameters: {
-          resource: GRAPH_RESOURCE,
+          resource: RESOURCE,
         },
       }.freeze
 
